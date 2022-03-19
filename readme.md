@@ -15,6 +15,8 @@ Ultralight http server with live reload.
 
 ### With secure protocol
 
+### With SPA support
+
 ### No dependencies
 
 <br>
@@ -62,6 +64,7 @@ serve.start({
     port: 7000,
     root: '.',
     live: true,
+    fallback: 'index.html',
     isHttps: true,
     tlsOptions: {
       key: 'absolute path to private key',
