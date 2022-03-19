@@ -58,6 +58,7 @@ npm init serve [folder]
 import serve from 'create-serve';
 
 serve.start({
+    host: 'localhost',
     port: 7000,
     root: '.',
     live: true,
