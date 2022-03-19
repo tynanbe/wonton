@@ -28,6 +28,7 @@
 		"cli",
 		"command-line",
 		"http",
+		"https",
 		"dev",
 		"development",
 		"server",
@@ -35,6 +36,7 @@
 		"live",
 		"reload",
 		"hot",
+		"spa",
 		"refresh"
 	]
 }
