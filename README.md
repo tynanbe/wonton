@@ -132,6 +132,6 @@ import serve, { error, log } from "wonton";
 serve.update();
 
 hasError
-    ? error("× Failed") // Red
-    : log("✓ Updated"); // Green
+  ? error("× Failed") // Red
+  : log("✓ Updated"); // Green
 ```

@@ -1,6 +1,7 @@
-import { eventSource } from './index.js';
+import { eventSource } from "./index.js";
 
-const injectCode = () => `
+const injectCode = () =>
+  `
     <script>
         (() => new EventSource('${eventSource}').onmessage = () => location.reload())();
     </script>
