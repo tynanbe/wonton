@@ -1,17 +1,55 @@
 #!/usr/bin/env node
-import { start } from './index.js';
 
-const root = process.argv[2];
-const args = { live: false, root };
+import { options, start } from './index.js';
 
-const port = process.argv[3];
-if (port) {
-	args.port = port;
-}
+const handleArg = (acc, arg) => {
+	acc['root'] = arg;
+	return acc;
+};
 
-const host = process.argv[4];
-if (host) {
-	args.host = host;
-}
+const setProperty = (obj, path, value) => {
+	const [head, ...rest] = path;
+	if (rest.length === 0) {
+		obj[head] = value;
+	} else {
+		// Ensure the next recursion has an object to work with
+		obj[head] = !!obj[head] && obj[head].constructor === Object ? obj[head] : {};
+		setProperty(obj[head], rest, value);
+	}
+};
+
+let doneFlags = false;
+let args = process.argv
+	.slice(2)
+	.reduce(
+		(acc, arg) => {
+			if (doneFlags || !arg.startsWith('--')) {
+				// Handle regular arguments
+				return handleArg(acc, arg);
+			}
+			let [flag, value] = arg.replace(/^-*/, '').split('=');
+			if ('' === flag) {
+				// All remaining arguments are regular
+				doneFlags = true;
+				return acc;
+			}
+			try {
+				value = JSON.parse(value);
+			} catch {
+				let bool = true;
+				if (flag.startsWith('no-')) {
+					// Handle `--no-` prefixed flags
+					bool = false;
+					flag = flag.substr(3);
+				}
+				// Ensure all flags have values
+				value = typeof value === 'undefined' ? bool : value;
+			}
+			// Treat flags as hyphen-delimited nested object paths
+			setProperty(acc, flag.split('-'), value);
+			return acc;
+		},
+		options,
+	);
 
 start(args);

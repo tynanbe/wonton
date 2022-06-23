@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "v*.*.*"
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: charlieegan3/fetch-gh-release-binary@main
+        with:
+          owner: rome
+          repo: tools
+          version: cli/v0.6.1-next
+          asset-pattern: linux-x64
+          install-path: /usr/local/bin/rome
+          verbose: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: rome ci --indent-style=space src test

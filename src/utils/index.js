@@ -2,6 +2,7 @@ export { addClient } from './addClient.js';
 export { error } from './error.js';
 export { getFilePath } from './getFilePath.js';
 export { getIp } from './getIp.js';
+export { handleEvent } from './handleEvent.js';
 export { injectContent } from './injectContent.js';
 export { log } from './log.js';
 export { mimeType } from './mimeType.js';

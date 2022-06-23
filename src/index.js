@@ -1,42 +1,43 @@
-import fs from 'fs';
-import path from 'path';
-import http from 'http';
-import https from 'https';
-import listen from './listen.js';
 import {
-	addClient,
+	checkTLSOptions,
 	error,
 	getFilePath,
+	handleEvent,
 	injectContent,
 	log,
 	mimeType,
 	setRoot,
 	show404,
 	showError,
-	showFile,
-	checkTLSOptions
+	showFile
 } from './utils/index.js';
+import listen from './listen.js';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import path from 'path';
 
 export let options = {
 	host: 'localhost',
+	live: true,
 	port: 7000,
 	root: '.',
-	live: true,
-	isHttps: false,
-	tlsOptions: null
+	tls: null
 };
 
 export const defaultRoot = './public';
 export const encoding = 'utf-8';
-export const eventSource = '/create-serve';
+export const eventSource = '/wonton';
 export const clients = [];
 
 export const start = (startOptions = {}) => {
+	process.on('SIGINT', () => process.exit(0));
+
 	Object.assign(options, startOptions);
 	options.root = setRoot();
 
-	const { live, tlsOptions, isHttps } = options;
-	const tlsConfig = isHttps ? checkTLSOptions(tlsOptions) : undefined;
+	const { live, tls } = options;
+	const tlsConfig = tls ? checkTLSOptions(tls) : undefined;
 	const protocol = {
 		module: tlsConfig ? https : http,
 		alias: tlsConfig ? 'https' : 'http',
@@ -44,10 +45,8 @@ export const start = (startOptions = {}) => {
 	options.protocol = protocol.alias;
 
 	const server = protocol.module.createServer(tlsConfig, (request, response) => {
-		if (live && request.url == eventSource) {
-			const client = addClient(response);
-
-			return clients.push(client);
+		if (live && request.url.startsWith(eventSource)) {
+			return handleEvent(request, response);
 		}
 
 		const filePath = getFilePath(request);
