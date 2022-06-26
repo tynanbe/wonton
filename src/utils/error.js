@@ -1,3 +1,3 @@
-import { log, styles } from "./index.js";
+import { log, style } from "./index.js";
 
-export const error = (message) => log(message, styles.red);
+export const error = (message) => log(message, style("red"));

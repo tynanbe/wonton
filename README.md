@@ -108,7 +108,7 @@ const esbuildServe = async (options = {}, serveOptions = {}) => {
       watch: isWatch && {
         onRebuild(err) {
           serve.update();
-          err ? error("× Failed") : log("✓ Updated");
+          err ? error("✗ Failed") : log("✓ Updated");
         }
       }
     })
@@ -132,6 +132,6 @@ import serve, { error, log } from "wonton";
 serve.update();
 
 hasError
-  ? error("× Failed") // Red
+  ? error("✗ Failed") // Red
   : log("✓ Updated"); // Green
 ```

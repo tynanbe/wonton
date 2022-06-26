@@ -1,4 +1,4 @@
-import { styles } from "./index.js";
+import { style } from "./index.js";
 
-export const log = (message, color = styles.green) =>
-  console.log(color + message + styles.reset);
+export const log = (message, color = style("green")) =>
+  console.log(color + message + style("reset"));
