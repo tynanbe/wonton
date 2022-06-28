@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.2.0 - 2022-06-28
+## v2.2.1 - 2022-06-28
 
 - Add directory listing support.
 
