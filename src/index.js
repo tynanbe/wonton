@@ -46,59 +46,55 @@ export const start = (startOptions = {}) => {
   };
   options.protocol = protocol.alias;
 
-  const server = protocol.module.createServer(
-    tlsConfig,
-    (request, response) => {
-      if (live && request.url.startsWith(eventSource)) {
-        return handleEvent(request, response);
+  const server = protocol.module.createServer(tlsConfig, (
+    request,
+    response,
+  ) => {
+    if (live && request.url.startsWith(eventSource)) {
+      return handleEvent(request, response);
+    }
+
+    const url = new URL(
+      request.url,
+      `${options.protocol}://${request.headers.host}`,
+    );
+    const pathname = url.pathname;
+
+    try {
+      const lstat = fs.lstatSync(path.join(options.root, pathname));
+      if (lstat.isDirectory() && !pathname.endsWith("/")) {
+        return redirect(response, 301, `${pathname}/`);
+      }
+    } catch {}
+
+    const filePath = getFilePath(pathname);
+
+    try {
+      const contents = fs.readdirSync(filePath);
+      return showDirectory(response, pathname, contents);
+    } catch {}
+
+    const extension = path.extname(filePath).toLowerCase().slice(1);
+    const contentType = mimeType(extension) || "application/octet-stream";
+    const isHtml = contentType == "text/html";
+    const encode = isHtml ? "utf8" : null;
+
+    fs.readFile(filePath, encode, (error, content) => {
+      if (error) {
+        if (error.code == "ENOENT") {
+          return show404(response);
+        }
+
+        return showError(response, error);
       }
 
-      const url = new URL(
-        request.url,
-        `${options.protocol}://${request.headers.host}`,
+      return showFile(
+        response,
+        live && isHtml ? injectContent(content) : content,
+        contentType,
       );
-      const pathname = url.pathname;
-
-      try {
-        const lstat = fs.lstatSync(path.join(options.root, pathname));
-        if (lstat.isDirectory() && !pathname.endsWith("/")) {
-          return redirect(response, 301, `${pathname}/`);
-        }
-      } catch {}
-
-      const filePath = getFilePath(pathname);
-
-      try {
-        const contents = fs.readdirSync(filePath);
-        return showDirectory(response, pathname, contents);
-      } catch {}
-
-      const extension = path.extname(filePath).toLowerCase().slice(1);
-      const contentType = mimeType(extension) || "application/octet-stream";
-      const isHtml = contentType == "text/html";
-      const encode = isHtml ? "utf8" : null;
-
-      fs.readFile(
-        filePath,
-        encode,
-        (error, content) => {
-          if (error) {
-            if (error.code == "ENOENT") {
-              return show404(response);
-            }
-
-            return showError(response, error);
-          }
-
-          return showFile(
-            response,
-            live && isHtml ? injectContent(content) : content,
-            contentType,
-          );
-        },
-      );
-    },
-  );
+    });
+  });
 
   listen(server);
 };

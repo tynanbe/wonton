@@ -6,14 +6,13 @@ export const showDirectory = (response, pathname, contents) => {
   const { live } = options;
   const title = `Index of ${pathname}`;
 
-  contents =
-    contents.map(
-      (item) =>
-        `
+  contents = contents.map(
+    (item) =>
+      `
       <li><svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg>
         <a href="${path.join(pathname, item)}">${item}</a></li>
     `,
-    ).join("\n");
+  ).join("\n");
 
   const content = `
     <head>

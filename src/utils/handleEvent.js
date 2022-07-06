@@ -8,13 +8,10 @@ export const handleEvent = (request, response) => {
       return clients.push(client);
     case `${eventSource}-update`:
       update();
-      response.writeHead(
-        200,
-        {
-          "Cache-Control": "no-cache, no-store",
-          "Content-Type": "text/plain",
-        },
-      );
+      response.writeHead(200, {
+        "Cache-Control": "no-cache, no-store",
+        "Content-Type": "text/plain",
+      });
       return response.end();
   }
 };
