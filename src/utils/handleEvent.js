@@ -1,5 +1,5 @@
-import { addClient } from "./addClient.js";
 import { clients, eventSource, update } from "../index.js";
+import { addClient } from "./addClient.js";
 
 export const handleEvent = (request, response) => {
   switch (request.url) {
@@ -13,5 +13,6 @@ export const handleEvent = (request, response) => {
         "Content-Type": "text/plain",
       });
       return response.end();
+    default:
   }
 };

@@ -1,0 +1,18 @@
+{
+  "fmt": {
+    "files": {
+      "include": [
+        "CHANGELOG.md",
+        "README.md",
+        "cli.js",
+        "deno.json",
+        "package.json",
+        "src",
+        "test"
+      ]
+    }
+  },
+  "tasks": {
+    "serve": "deno run --allow-net --allow-read --allow-sys --unstable cli.js"
+  }
+}

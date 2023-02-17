@@ -1,5 +1,11 @@
+import * as fs from "node:fs";
+import * as http from "node:http";
+import * as https from "node:https";
+import * as path from "node:path";
+import process from "node:process";
+import listen from "./listen.js";
 import {
-  checkTLSOptions,
+  checkTlsOptions,
   error,
   getFilePath,
   handleEvent,
@@ -13,11 +19,6 @@ import {
   showError,
   showFile,
 } from "./utils/index.js";
-import listen from "./listen.js";
-import fs from "fs";
-import http from "http";
-import https from "https";
-import path from "path";
 
 export let options = {
   host: "localhost",
@@ -39,17 +40,25 @@ export const start = (startOptions = {}) => {
   options.root = setRoot();
 
   const { live, tls } = options;
-  const tlsConfig = tls ? checkTLSOptions(tls) : undefined;
-  const protocol = {
-    module: tlsConfig ? https : http,
-    alias: tlsConfig ? "https" : "http",
-  };
-  options.protocol = protocol.alias;
+  let tlsConfig = tls ? checkTlsOptions(tls) : undefined;
+  options.protocol = tlsConfig ? "https" : "http";
 
-  const server = protocol.module.createServer(tlsConfig, (
-    request,
-    response,
-  ) => {
+  let server;
+  if (tlsConfig) {
+    try {
+      server = https.createServer(tlsConfig, handleRequest);
+    } catch (e) {
+      tlsConfig = checkTlsOptions({}, e);
+      options.protocol = "http";
+    }
+  }
+  if (!tlsConfig) {
+    server = http.createServer(handleRequest);
+  }
+
+  listen(server);
+
+  function handleRequest(request, response) {
     if (live && request.url.startsWith(eventSource)) {
       return handleEvent(request, response);
     }
@@ -94,13 +103,11 @@ export const start = (startOptions = {}) => {
         contentType,
       );
     });
-  });
-
-  listen(server);
+  }
 };
 
 export const update = () => {
-  clients.forEach((response) => response.write("data: update\n\n"));
+  clients.forEach((response) => response.end("data: update\n\n"));
   clients.length = 0;
 };
 

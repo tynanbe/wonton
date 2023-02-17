@@ -13,19 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - uses: denoland/setup-deno@v1
         with:
-          node-version: 16
+          deno-version: "v1.x"
 
-      - uses: charlieegan3/fetch-gh-release-binary@main
+      - uses: actions/cache@v3
         with:
-          owner: rome
-          repo: tools
-          version: cli/v0.7.0-next
-          asset-pattern: linux-x64
-          install-path: /usr/local/bin/rome
-          verbose: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: |
+            ~/.deno
+            ~/.cache/deno
+          key: ${{ runner.os }}-deno-${{ hashFiles('deno.lock') }}
 
-      - run: rome ci --indent-style=space src test
+      - run: deno fmt --check
