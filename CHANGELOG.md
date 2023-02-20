@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Wonton now supports the Deno JavaScript runtime (v1.30 or later).
+
 ## v2.2.1 - 2022-06-28
 
 - Add directory listing support.

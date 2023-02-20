@@ -1,4 +1,4 @@
-import { networkInterfaces } from "os";
+import { networkInterfaces } from "node:os";
 
 export const getIp = () =>
   Object.values(networkInterfaces())

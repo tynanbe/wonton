@@ -1,14 +1,13 @@
-import { injectContent } from "./index.js";
+import * as path from "node:path";
 import { options } from "../index.js";
-import path from "path";
+import { injectContent } from "./index.js";
 
 export const showDirectory = (response, pathname, contents) => {
   const { live } = options;
   const title = `Index of ${pathname}`;
 
   contents = contents.map(
-    (item) =>
-      `
+    (item) => `
       <li><svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg>
         <a href="${path.join(pathname, item)}">${item}</a></li>
     `,

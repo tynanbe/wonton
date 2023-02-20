@@ -1,5 +1,5 @@
-import { options, encoding } from "../index.js";
-import fs from "fs";
+import * as fs from "node:fs";
+import { encoding, options } from "../index.js";
 
 export const show404 = (response) => {
   fs.readFile(`${options.root}/404.html`, (error, content) => {
