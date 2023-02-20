@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.3.0 - 2023-02-19
 
 - Wonton now supports the Deno JavaScript runtime (v1.30 or later).
 
